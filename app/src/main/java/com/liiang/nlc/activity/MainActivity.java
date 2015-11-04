@@ -22,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        initSearchView();
     }
 
 
@@ -57,5 +58,31 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
             /* 关闭当前的Activity */
         // finish();
+    }
+
+    private void initSearchView(){
+        ListView list = (ListView) findViewById(R.id.collectedListView);
+        //生成动态数组，并且转载数据
+        ArrayList<HashMap<String, String>> mylist = new ArrayList<HashMap<String, String>>();
+        for(int i=0;i<30;i++)
+        {
+            HashMap<String, String> map = new HashMap<String, String>();
+            map.put("bookid", ""+i);
+            map.put("bookname", "用户体验"+i);
+            map.put("author", "罗浩");
+            map.put("publish", "中信出版社");
+            map.put("publishyear", "2015");
+            mylist.add(map);
+        }
+        //生成适配器，数组===》ListItem
+        SimpleAdapter mSchedule = new SimpleAdapter(this, //没什么解释
+                mylist,//数据来源
+                R.layout.activity_book_list,//ListItem的XML实现
+                //动态数组与ListItem对应的子项
+                new String[] {"bookid", "bookname", "author", "publish", "publishyear"},
+                //ListItem的XML文件里面的两个TextView ID
+                new int[] {R.id.bookid,R.id.bookname, R.id.author, R.id.publish, R.id.publishyear});
+        //添加并且显示
+        list.setAdapter(mSchedule);
     }
 }
