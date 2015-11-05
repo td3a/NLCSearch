@@ -1,14 +1,22 @@
 package com.liiang.nlc.activity;
 
+import android.content.Context;
+import android.os.Message;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Spinner;
 
 import com.liiang.nlc.R;
+import com.liiang.nlc.model.BookDetail;
 import com.liiang.nlc.model.BookTypePair;
+import com.liiang.nlc.utils.Post;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,7 +31,22 @@ public class SearchActivity extends AppCompatActivity {
         setContentView(R.layout.activity_search);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         initspinner();
-        initSearchView();
+        addEventListener();
+    }
+
+    private void addEventListener(){
+        Button searchBtn = (Button) findViewById( R.id.searchBtn );
+        searchBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Spinner spinner = (Spinner) findViewById(R.id.booktypespinner);
+                BookTypePair bookType = (BookTypePair) spinner.getSelectedItem();
+                String type = bookType.key;
+                EditText keyEditText = (EditText) findViewById(R.id.searchKeyEditText);
+                String keyStr = keyEditText.getText().toString();
+                showTypeAndKeyStr(SearchActivity.this, type, keyStr);
+            }
+        });
     }
 
     private void  initspinner(){
@@ -38,23 +61,27 @@ public class SearchActivity extends AppCompatActivity {
         spinner.setAdapter(adapter);
     }
 
-    private void initSearchView(){
-        ListView list = (ListView) findViewById(R.id.bookListView);
+    private void initSearchView(List<BookDetail> bookDetailList){
         //生成动态数组，并且转载数据
         ArrayList<HashMap<String, String>> mylist = new ArrayList<HashMap<String, String>>();
-        for(int i=0;i<30;i++)
+        for(BookDetail bookDetail : bookDetailList)
         {
             HashMap<String, String> map = new HashMap<String, String>();
-            map.put("bookid", ""+i);
-            map.put("bookname", "用户体验"+i);
-            map.put("author", "罗浩");
-            map.put("publish", "中信出版社");
-            map.put("publishyear", "2015");
+            map.put("bookid", bookDetail.getBookid());
+            map.put("bookname", bookDetail.getBookname());
+            map.put("author",  bookDetail.getAuthor());
+            map.put("publish", bookDetail.getPublish());
+            map.put("publishyear", bookDetail.getPublishyear());
             mylist.add(map);
         }
+        fillListView(mylist);
+
+    }
+    private void fillListView(ArrayList<HashMap<String, String>> bookDetailList){
+        ListView list = (ListView) findViewById(R.id.bookListView);
         //生成适配器，数组===》ListItem
         SimpleAdapter mSchedule = new SimpleAdapter(this, //没什么解释
-                mylist,//数据来源
+                bookDetailList,//数据来源
                 R.layout.activity_book_list,//ListItem的XML实现
                 //动态数组与ListItem对应的子项
                 new String[] {"bookid", "bookname", "author", "publish", "publishyear"},
@@ -63,4 +90,24 @@ public class SearchActivity extends AppCompatActivity {
         //添加并且显示
         list.setAdapter(mSchedule);
     }
+
+
+    private void showTypeAndKeyStr(Context context, String type , String key){
+        final String typeStr = type;
+        final String keyStr = key;
+        new Thread(){
+            public void run() {
+                final List<BookDetail> bookDetailList = Post.doSearch(typeStr, keyStr);
+                if(bookDetailList != null && bookDetailList.size() > 0 ){
+                    SearchActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            initSearchView(bookDetailList);
+                        }
+                    });
+                }
+            }
+        }.start();
+    }
+
 }

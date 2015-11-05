@@ -21,17 +21,15 @@
               android:id="@+id/booktypespinner"
               android:layout_width="105dp"
               android:layout_height="match_parent" >
-
-
           </Spinner>
-          <EditText
+          <EditText android:id="@+id/searchKeyEditText"
               android:layout_width="0dp"
               android:layout_height="match_parent"
               android:layout_weight="2"/>
-          <Button
+          <Button android:id="@+id/searchBtn"
               android:layout_width="80dp"
               android:layout_height="match_parent"
-              android:text="Search"/>
+              android:text="Search" />
       </LinearLayout>
 
       <ListView android:id="@+id/bookListView"
