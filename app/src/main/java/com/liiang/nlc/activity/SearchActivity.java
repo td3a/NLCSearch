@@ -1,17 +1,19 @@
 package com.liiang.nlc.activity;
 
 import android.content.Context;
-import android.os.Message;
-import android.support.v7.app.AlertDialog;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.liiang.nlc.R;
 import com.liiang.nlc.model.BookDetail;
@@ -39,12 +41,12 @@ public class SearchActivity extends AppCompatActivity {
         searchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Spinner spinner = (Spinner) findViewById(R.id.booktypespinner);
-                BookTypePair bookType = (BookTypePair) spinner.getSelectedItem();
-                String type = bookType.key;
-                EditText keyEditText = (EditText) findViewById(R.id.searchKeyEditText);
-                String keyStr = keyEditText.getText().toString();
-                showTypeAndKeyStr(SearchActivity.this, type, keyStr);
+                    Spinner spinner = (Spinner) findViewById(R.id.booktypespinner);
+                    BookTypePair bookType = (BookTypePair) spinner.getSelectedItem();
+                    String type = bookType.key;
+                    EditText keyEditText = (EditText) findViewById(R.id.searchKeyEditText);
+                    String keyStr = keyEditText.getText().toString();
+                    showTypeAndKeyStr(SearchActivity.this, type, keyStr);
             }
         });
     }
@@ -89,14 +91,26 @@ public class SearchActivity extends AppCompatActivity {
                 new int[] {R.id.bookid,R.id.bookname, R.id.author, R.id.publish, R.id.publishyear});
         //添加并且显示
         list.setAdapter(mSchedule);
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                TextView bookidTextView = (TextView)view.findViewById(R.id.bookid);
+                String bookid = bookidTextView.getText().toString();
+                TextView booknameTextView = (TextView)view.findViewById(R.id.bookname);
+                String bookname = booknameTextView.getText().toString();
+                openDetailActivity(bookid, bookname);
+            }
+        });
     }
 
 
     private void showTypeAndKeyStr(Context context, String type , String key){
         final String typeStr = type;
         final String keyStr = key;
+        Toast.makeText(getApplicationContext(), "Loading",  Toast.LENGTH_SHORT).show();
         new Thread(){
             public void run() {
+                //Toast.makeText(getApplicationContext(), "Loading",  Toast.LENGTH_SHORT).show();
                 final List<BookDetail> bookDetailList = Post.doSearch(typeStr, keyStr);
                 if(bookDetailList != null && bookDetailList.size() > 0 ){
                     SearchActivity.this.runOnUiThread(new Runnable() {
@@ -110,4 +124,19 @@ public class SearchActivity extends AppCompatActivity {
         }.start();
     }
 
+
+    /**
+     * @param bookid--> "NLC01039383737"
+     */
+    private void openDetailActivity(String bookid, String bookname){
+        Intent intent = new Intent();
+        intent.putExtra("bookid",bookid);
+        intent.putExtra("bookname", bookname);
+            /* 指定intent要启动的类 */
+        intent.setClass(SearchActivity.this, StatusActivity.class);
+            /* 启动一个新的Activity */
+        startActivity(intent);
+            /* 关闭当前的Activity */
+        // finish();
+    }
 }

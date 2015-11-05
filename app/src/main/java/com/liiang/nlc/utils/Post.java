@@ -3,6 +3,7 @@ package com.liiang.nlc.utils;
 import android.util.JsonToken;
 
 import com.liiang.nlc.model.BookDetail;
+import com.liiang.nlc.model.BookStatus;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -29,7 +30,6 @@ public class Post {
     public static String SERVER_DOMAIN = "http://www.liiang.com/NLC/";
 
     public static List<BookDetail> doSearch(String type, String keyStr){
-
         List<BookDetail> resultList = new ArrayList<BookDetail>();
         String urlStr = SERVER_DOMAIN + "NLCSearch.php";
         try {
@@ -69,6 +69,64 @@ public class Post {
                     book.setAuthor( item.getString("author"));
                     book.setPublish(item.getString("publish"));
                     book.setPublishyear(item.getString("year"));
+                    resultList.add(book);
+                }
+            }
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return resultList;
+    }
+
+    public static List<BookStatus> doGetStatus(String bookid){
+        List<BookStatus> resultList = new ArrayList<BookStatus>();
+        String urlStr = SERVER_DOMAIN + "NLCDetail.php";
+        try {
+            String docLibrary = bookid.substring(0,5);
+            String docNumber = bookid.substring(5);
+            String paramStr ="doc_library=" + docLibrary;
+            paramStr += "&doc_number=" + docNumber;
+
+            URL url = new URL(urlStr);
+            HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
+            httpConn.setDoOutput(true);
+            httpConn.setDoInput(true);
+            httpConn.setUseCaches(false);
+            httpConn.setRequestMethod("POST");
+            httpConn.setRequestProperty("contentType", "UTF-8");
+            httpConn.connect();
+            DataOutputStream out = new DataOutputStream(httpConn.getOutputStream());
+
+            out.writeBytes(paramStr);
+            out.flush();
+            out.close();
+            if( httpConn.getResponseCode() == 200){
+                InputStream in = httpConn.getInputStream();
+                ByteArrayOutputStream bout = new ByteArrayOutputStream();
+                int len =0;
+                byte buffer[] = new byte[1024];
+                while ( (len = in.read(buffer)) != -1){
+                    bout.write(buffer, 0, len);
+                }
+                in.close();
+                bout.close();
+                String resultStr = new String(bout.toByteArray());
+                JSONArray jsonArray = new  JSONArray(resultStr);
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject item = jsonArray.getJSONObject(i); // 得到每个对象
+                    BookStatus book = new BookStatus();
+                    book.setLoanstatus(item.getString("loanstatus"));
+                    book.setBarcode(item.getString("barcode"));
+                    book.setCollectionno(item.getString("collectionno"));
+                    book.setDuedate(item.getString("duedate"));
+                    book.setDuehour(item.getString("duehour"));
+                    book.setSublibrary(item.getString("sublibrary"));
+                    book.setLocation(item.getString("location"));
+                    book.setRequestno(item.getString("requestno"));
                     resultList.add(book);
                 }
             }

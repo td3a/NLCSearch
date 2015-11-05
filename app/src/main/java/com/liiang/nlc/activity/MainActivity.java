@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initSearchView(){
-        ListView list = (ListView) findViewById(R.id.collectedListView);
+        ListView list = (ListView) findViewById(R.id.collectedlistview);
         //生成动态数组，并且转载数据
         ArrayList<HashMap<String, String>> mylist = new ArrayList<HashMap<String, String>>();
         for(int i=0;i<30;i++)

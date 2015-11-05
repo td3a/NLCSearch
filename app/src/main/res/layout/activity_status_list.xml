@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="2dp"
+    android:paddingRight="2dp"
+    android:paddingTop="3dp"
+    android:paddingBottom="3dp"
+    android:orientation="vertical"
+    android:id="@+id/statuslistitem">
+
+   <TableLayout
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content">
+       <TableRow>
+           <TextView android:text="单册状态"/>
+           <TextView android:id="@+id/loanstatus"/>
+       </TableRow>
+       <TableRow>
+           <TextView android:text="索取号"/>
+           <TextView android:id="@+id/collectionno"/>
+       </TableRow>
+       <TableRow>
+           <TextView android:text="应还日期"/>
+           <TextView android:id="@+id/duedate"/>
+       </TableRow>
+       <TableRow>
+           <TextView android:text="应还时间"/>
+           <TextView android:id="@+id/duehour"/>
+       </TableRow>
+       <TableRow>
+           <TextView android:text="子库"/>
+           <TextView android:id="@+id/sublibrary"/>
+       </TableRow>
+       <TableRow>
+           <TextView android:text="架位导航"/>
+           <TextView android:id="@+id/location"/>
+       </TableRow>
+       <TableRow>
+           <TextView android:text="请求数"/>
+           <TextView android:id="@+id/requestno"/>
+       </TableRow>
+       <TableRow>
+           <TextView android:text="条码"/>
+           <TextView android:id="@+id/barcode"/>
+       </TableRow>
+   </TableLayout>
+</LinearLayout>
